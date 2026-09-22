@@ -1,0 +1,10 @@
+- [statkit.cms.api scaffold context](project_scaffold_context.md) — 스캐폴드 아키텍처 결정 사항, 알려진 기술 부채, 스택 확정 내역 (초기 커밋 기준 2026-07-18)
+- [Claude agents 설정 이슈](claude_agents_config_issues.md) — git-commit-pusher.md tools 목록에 Bash 없음 (pre-existing, 2026-07-25 기준 미해결)
+- [BLOCKED 후 커밋 범위 축소 패턴](feedback_scope_narrowing.md) — 문제 파일 제외 후 재리뷰 요청 시 판정 방식
+- [Slack 알림 훅 신뢰성 이슈](hooks_slack_notification_issues.md) — notification-hook.sh/stop-hook.sh, 1차 BLOCKED → 2차 리뷰(같은 날) Major 3건 해소 확인, APPROVED
+- [formatter.sh 경로 검증 삭제/복원 이력](hooks_formatter_path_validation.md) — CLAUDE_PROJECT_DIR prefix 검증, 2026-07-25 복원 확인 APPROVED, 잔여 Minor(.. 우회 가능성)
+- [settings.json 인라인 훅 후퇴 + portfolio 드리프트](settings_json_inline_hooks_and_portfolio_drift.md) — 2026-08-31 BLOCKED→재검토 APPROVED(조건부), portfolio is_enabled 활성화 시 table_name 수정 필수 확인
+- [서브에이전트 Bash 도구 미제공 환경](env_no_bash_subagent.md) — code-reviewer 세션에 Bash 없을 수 있음, git status/diff 대신 Read/Grep으로 내용 검증 후 조건부 판정
+- [Recoil→React Query 인증 마이그레이션](react_query_auth_migration.md) — 2026-08-31 전환, signOut invalidateQueries 누락(Major, 조건부 APPROVED), dedup 안전성 확인됨
+- [content-api-configs.ts admin client 아키텍처](content_api_configs_admin_client_architecture.md) — /api/v1/* 전체가 createAdminClient()로 RLS 우회, 2026-09-16 확인(Major, 사전존재로 조건부 APPROVED). 새 리소스 seed 시 table_name 검증 필수. select_columns=null 시 SELECT * 위험 추가(2026-09-22)
+- [초기 스캐폴드 커밋 PII 백업 BLOCKED](initial_commit_pii_backups_blocked.md) — 2026-09-22, supabase/backups/*.sql에 실제 이메일·주문 데이터 포함되어 BLOCKED. 이후 재리뷰 시 반드시 확인
