@@ -1,23 +1,14 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/libs/supabase/server";
+import { getAuthenticatedUser } from "@/libs/supabase/queries/auth-me";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const result = await getAuthenticatedUser();
 
-  if (!user) {
+  if (!result) {
     return NextResponse.json({ user: null, profile: null }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("franchise_users")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  return NextResponse.json({ user, profile });
+  return NextResponse.json(result);
 }

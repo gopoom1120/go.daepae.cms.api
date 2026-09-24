@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/libs/supabase/admin";
+import { getPublicFranchisePopups } from "@/libs/supabase/queries/franchise-popups.public";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,21 +9,14 @@ export const dynamic = "force-dynamic";
 // 없으므로 이 계열은 별도로 무인증 공개 처리한다. franchise_popups_public 뷰가 이미
 // 발행 여부(is_published)와 노출기간(start_date~end_date)을 필터링해준다.
 export async function GET() {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("franchise_popups_public")
-    .select(
-      "id,title,image_url,link_url,start_date,end_date,sort_order,created_at",
-    )
-    .order("sort_order", { ascending: true });
-
-  if (error) {
+  try {
+    const data = await getPublicFranchisePopups();
+    return NextResponse.json({ data });
+  } catch (error) {
     console.error("[GET /api/v1/public/franchise-popups]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
     );
   }
-
-  return NextResponse.json({ data: data ?? [] });
 }

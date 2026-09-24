@@ -112,7 +112,7 @@ export default function FranchisePopupsTable({
             onDragOver={(e) => handleDragOver(e, index)}
             onDrop={handleDrop}
             onDragEnd={handleDragEnd}
-            className={`flex items-center gap-3 px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors ${
+            className={`flex items-center gap-3 px-4 py-4 ${
               draggingId === popup.id ? "opacity-40" : ""
             }`}
           >
@@ -162,7 +162,9 @@ export default function FranchisePopupsTable({
               )}
             </div>
 
-            <div className={`relative shrink-0 ${menuOpenId === popup.id ? "z-[100]" : "z-50"}`}>
+            <div
+              className={`relative shrink-0 ${menuOpenId === popup.id ? "z-[100]" : "z-50"}`}
+            >
               <button
                 onClick={() =>
                   setMenuOpenId(menuOpenId === popup.id ? null : popup.id)
