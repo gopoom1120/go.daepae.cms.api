@@ -7,3 +7,4 @@
 - [Recoil→React Query 인증 마이그레이션](react_query_auth_migration.md) — 2026-08-31 전환, signOut invalidateQueries 누락(Major, 조건부 APPROVED), dedup 안전성 확인됨
 - [content-api-configs.ts admin client 아키텍처](content_api_configs_admin_client_architecture.md) — /api/v1/* 전체가 createAdminClient()로 RLS 우회, 2026-09-16 확인(Major, 사전존재로 조건부 APPROVED). 새 리소스 seed 시 table_name 검증 필수. select_columns=null 시 SELECT * 위험 추가(2026-09-22)
 - [초기 스캐폴드 커밋 PII 백업 BLOCKED](initial_commit_pii_backups_blocked.md) — 2026-09-22, supabase/backups/*.sql에 실제 이메일·주문 데이터 포함되어 BLOCKED. 이후 재리뷰 시 반드시 확인
+- [auth-me/franchise-popups.public 쿼리 정리 diff](queries_conventions_auth_me_and_public_view_pattern.md) — 2026-09-24, admin→anon 전환 안전성 검증 패턴(_public 뷰+security_invoker+RLS 대조), auth-me.ts `.single()` 에러 스왈로우 Minor(APPROVED)
