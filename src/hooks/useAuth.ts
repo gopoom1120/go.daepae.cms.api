@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import type { UserProfile } from "@/types/user";
+import { createClient } from "@/libs/supabase/client";
 
 export const authQueryKey = ["auth", "me"] as const;
 
@@ -33,8 +34,9 @@ export function useAuth() {
   const isAuthenticated = !isLoading && user !== null;
   const isAdmin = !isLoading && profile?.role === "admin";
 
-  const signOut = () => {
-    document.cookie = "mock-auth=; path=/; max-age=0; SameSite=Strict";
+  const signOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
     queryClient.setQueryData(authQueryKey, { user: null, profile: null });
     queryClient.invalidateQueries({ queryKey: authQueryKey });
     router.push("/sign/in");

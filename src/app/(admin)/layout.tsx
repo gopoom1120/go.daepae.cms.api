@@ -1,15 +1,21 @@
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { MobileMenuProvider } from '@/components/admin/MobileMenuContext';
-import AdminShell from '@/components/admin/AdminShell';
-import Sidebar from '@/components/admin/Sidebar';
+import { redirect } from "next/navigation";
+import { MobileMenuProvider } from "@/components/admin/MobileMenuContext";
+import AdminShell from "@/components/admin/AdminShell";
+import Sidebar from "@/components/admin/Sidebar";
+import { createClient } from "@/libs/supabase/server";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = cookies();
-  const isAuthenticated = cookieStore.get('mock-auth')?.value === 'true';
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!isAuthenticated) {
-    redirect('/sign/in');
+  if (!user) {
+    redirect("/sign/in");
   }
 
   return (
@@ -18,7 +24,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <AdminShell>
           <div className="flex gap-3 p-3 pt-[68px] lg:pt-3">
             <Sidebar />
-            <main className="flex-1 min-w-0 py-4 px-1 lg:pt-8 lg:px-6">{children}</main>
+            <main className="flex-1 min-w-0 py-4 px-1 lg:pt-8 lg:px-6">
+              {children}
+            </main>
           </div>
         </AdminShell>
       </div>

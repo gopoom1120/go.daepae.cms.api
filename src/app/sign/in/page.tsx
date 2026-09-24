@@ -20,7 +20,7 @@ export default function SignInPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-10 w-full max-w-md mx-4 sm:mx-0">
         <h1 className="text-2xl font-bold text-gray-900 mb-8">
-          FRANCHISE Admin
+          고품격대패 관리자
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
