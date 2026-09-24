@@ -60,26 +60,6 @@
             "command": "echo '✅ 작업 완료. 변경된 파일:' && (git status --short 2>/dev/null || echo '(git 없음)')"
           }
         ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/stop-hook.sh"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/notification-hook.sh"
-          }
-        ]
       }
     ]
   },
