@@ -60,6 +60,21 @@ memory: project
 - 테스트의 독립성 및 신뢰성
 - 테스트 코드의 품질
 
+## 프로젝트 고유 규칙 체크리스트 (필수 확인)
+
+위 5대 영역과 별개로, **이 저장소(statkit.cms.api)에 한정된 규칙**을 리뷰할 때마다 반드시 함께 점검하십시오. 일반적인 코드 품질 기준으로는 잡히지 않지만 이 프로젝트에서 실제로 반복 발생했던 위반 패턴입니다.
+
+1. **패키지 매니저**: `yarn`만 사용. diff에 `package-lock.json`/`npm-shrinkwrap.json`이 새로 생겼다면 즉시 Major.
+2. **Supabase 쿼리 위치**: `.from(테이블명)` 같은 실제 테이블 조회/변경은 반드시 `src/libs/supabase/queries/` 파일에서만 작성해야 하며, 컴포넌트·페이지·API 라우트에 인라인으로 있으면 안 됨. **단, `supabase.auth.getUser()`/`signInWithPassword()`/`signOut()`처럼 세션만 확인·조작하는 auth 호출은 이 규칙의 예외이므로 위반으로 잡지 말 것.**
+3. **인증 상태 접근**: `@tanstack/react-query`의 `authQueryKey`를 `useAuth()`/`useUser()` 훅 바깥(개별 컴포넌트)에서 직접 구독하면 위반.
+4. **shadcn utils 경로**: `@/libs/utils`가 정답, `@/lib/utils`(단수 lib)로 임포트했다면 오타 — Major.
+5. **공개 REST API(`/api/v1/*`) 원칙**: 인증 없는 공개 read 엔드포인트는 `createAdminClient()`(RLS 우회)가 아니라 `createClient()`(anon key, RLS 적용)를 써야 함. RLS/뷰(`security_invoker` 등) 정의를 직접 대조해서 anon 전환이 실제로 안전한지(노출 범위가 넓어지지 않는지) 확인 후 판단할 것. `content-api-configs.ts`의 `createAdminClient()` 사용은 리소스별 동적 테이블 조회라는 별도 이유로 이미 알려진 기술부채이니 새로 지적하지 말 것(단, 새 리소스 seed 추가 시 `table_name`/`select_columns` 정합성은 계속 확인).
+6. **mock 인증 재도입 금지**: `mock-auth` 쿠키, `MOCK_EMAIL`/`MOCK_PASSWORD` 환경변수, `profile.id === 'mock-user-id'` 같은 패턴이 diff에 다시 나타나면 Critical(이미 전면 제거된 레거시).
+7. **셀프 회원가입 경로 금지**: `/sign/up`, `signUpWithEmail` 류의 공개 계정 생성 경로가 다시 추가되면 Critical로 취급 — 이 프로젝트는 "관리자가 Supabase 대시보드에서 계정을 만들고 role을 수동 승격"하는 구조만 허용한다(role 기반 미들웨어 게이트 없이 셀프가입을 추가하면 즉시 권한 상승 취약점이 됨).
+8. **role 기반 인가 검사**: 관리자 경로를 보호하는 로직(미들웨어, 레이아웃)이 단순 "로그인 여부"(`user !== null`)가 아니라 **`franchise_users.role === 'admin'`** 기준인지 확인. 로그인만으로 관리자 화면 진입이 가능해지는 diff는 Critical.
+9. **`franchise_users.role` 컬럼 보호**: 사용자가 본인 행을 update할 수 있는 RLS 정책에 `role` 컬럼 변경을 막는 `with check`/트리거가 없다면 셀프 권한 승격 가능 — Critical.
+10. **UI/디자인 시스템**: 새 화면·컴포넌트가 `docs/design.md`의 색상·radius·컴포넌트 규칙을 따르는지, 임의의 하드코딩 색상값을 쓰지 않는지 확인.
+
 ## 리뷰 출력 형식
 
 리뷰 결과를 다음 구조로 작성하십시오:
@@ -112,6 +127,7 @@ memory: project
 ```
 
 **판정 기준:**
+
 - `APPROVED`: Critical 및 Major 이슈가 없는 경우 → git-commit-pusher 실행 신호
 - `APPROVED (조건부)`: Minor 이슈만 있는 경우 → 커밋은 진행하되, 이슈 목록을 함께 안내하여 후속 처리 유도
 - `BLOCKED`: Critical 또는 Major 이슈가 1개 이상 있는 경우 → 이슈 수정 전까지 커밋 중단
