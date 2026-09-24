@@ -14,8 +14,21 @@ const ADMIN_PATHS = [
   "/franchise",
 ];
 
+// 공개 API(/api/v1/*)를 호출하는 걸 허용할 프론트엔드 출처.
+// go.daepae(랜딩페이지) 배포/로컬 개발 주소만 등록한다 — Vercel 프리뷰 배포처럼
+// 매 배포마다 해시가 바뀌는 주소가 필요하면 그때마다 여기 추가할 것.
+const ALLOWED_ORIGINS = [
+  "https://go-daepae.vercel.app",
+  "http://localhost:3000",
+];
+
 function isPublicApiPath(pathname: string): boolean {
   return pathname.startsWith("/api/v1/") || pathname === "/api/openapi.json";
+}
+
+function resolveCorsOrigin(request: NextRequest): string | null {
+  const origin = request.headers.get("origin");
+  return origin && ALLOWED_ORIGINS.includes(origin) ? origin : null;
 }
 
 export async function middleware(request: NextRequest) {
@@ -26,25 +39,31 @@ export async function middleware(request: NextRequest) {
     if (!isPublicApiPath(pathname))
       return new NextResponse(null, { status: 405 });
 
-    return new NextResponse(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Accept",
-        "Access-Control-Max-Age": "86400",
-      },
-    });
+    const corsOrigin = resolveCorsOrigin(request);
+    const headers: Record<string, string> = {
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-API-Key, Accept",
+      "Access-Control-Max-Age": "86400",
+      Vary: "Origin",
+    };
+    if (corsOrigin) headers["Access-Control-Allow-Origin"] = corsOrigin;
+
+    return new NextResponse(null, { status: 204, headers });
   }
 
-  // 공개 API 경로는 세션 검증 없이 CORS 헤더만 주입 — X-API-Key 인증이 보안 레이어
+  // 공개 API 경로는 세션 검증 없이 CORS 헤더만 주입 — X-API-Key 인증이 보안 레이어.
+  // Origin이 화이트리스트에 없으면 헤더를 아예 생략한다(브라우저가 자체적으로 읽기를
+  // 차단함 — curl/서버 간 호출은 CORS 자체를 신경 쓰지 않으므로 요청은 정상 처리됨).
   if (isPublicApiPath(pathname)) {
     const response = NextResponse.next();
-    response.headers.set("Access-Control-Allow-Origin", "*");
+    const corsOrigin = resolveCorsOrigin(request);
+    if (corsOrigin)
+      response.headers.set("Access-Control-Allow-Origin", corsOrigin);
     response.headers.set(
       "Access-Control-Allow-Headers",
       "Content-Type, X-API-Key, Accept",
     );
+    response.headers.set("Vary", "Origin");
     return response;
   }
 
