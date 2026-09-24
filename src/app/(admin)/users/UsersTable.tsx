@@ -15,7 +15,9 @@ const ROLE_LABEL: Record<UserProfile["role"], "일반" | "관리자"> = {
 };
 
 function formatJoinedAt(createdAt: string): string {
-  return new Date(createdAt).toLocaleDateString("ko-KR");
+  return new Date(createdAt).toLocaleDateString("ko-KR", {
+    timeZone: "Asia/Seoul",
+  });
 }
 
 export default function UsersTable({ users }: { users: UserProfile[] }) {

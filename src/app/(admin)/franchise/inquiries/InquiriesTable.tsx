@@ -188,7 +188,9 @@ export default function InquiriesTable({
                 </p>
               )}
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
-                {new Date(inquiry.created_at).toLocaleString("ko-KR")}
+                {new Date(inquiry.created_at).toLocaleString("ko-KR", {
+                  timeZone: "Asia/Seoul",
+                })}
               </p>
             </div>
 
