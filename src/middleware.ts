@@ -19,6 +19,8 @@ const ADMIN_PATHS = [
 // 매 배포마다 해시가 바뀌는 주소가 필요하면 그때마다 여기 추가할 것.
 const ALLOWED_ORIGINS = [
   "https://go-daepae.vercel.app",
+  "https://xn--i89a2dz9q2p1bhpb.com",
+  "https://admin.xn--i89a2dz9q2p1bhpb.com",
   "http://localhost:3000",
 ];
 
